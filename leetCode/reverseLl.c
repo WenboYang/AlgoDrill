@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 struct ListNode
@@ -8,6 +9,8 @@ struct ListNode
    struct ListNode *next;
 };
 
+#define USE_RECURSIVE
+#ifndef USE_RECURSIVE
 struct ListNode* reverseList( struct ListNode* head )
 {
    if ( !head )
@@ -30,6 +33,42 @@ struct ListNode* reverseList( struct ListNode* head )
    return prev;
 
 }
+#else
+struct ListNode* recReverse( struct ListNode* head, struct ListNode** pTail )
+{
+   if ( !head )
+   {
+      return NULL;
+   }
+   else
+   {
+      struct ListNode* cur = recReverse( head->next, pTail );
+      if ( !cur )
+      {
+         *pTail = head;
+         return head;
+      }
+      else
+      {
+         head->next = NULL;
+         (*pTail)->next = head;
+         *pTail = head;
+         return cur;
+      }
+      return head;
+   }
+}
+
+
+struct ListNode* reverseList( struct ListNode* head )
+{
+   struct ListNode** pTail;
+   pTail = &head;
+   return recReverse( head, pTail );
+}
+      
+#endif
+
 
 int main( void )
 {
@@ -43,7 +82,7 @@ int main( void )
    {
       struct ListNode* newNode = malloc( sizeof( struct ListNode ) );
       newNode->val = i;
-      newNode->next = 0;
+      newNode->next = NULL;
       cur->next = newNode;
       cur = cur->next;
    }
@@ -55,6 +94,7 @@ int main( void )
       head = head->next;
    }
    */
+
    head = reverseList( head );
 
 
